@@ -21,6 +21,7 @@ export const EngiviaCardWithTotalLikes: FC<Props> = ({
       setAudioString(data.base64String);
     };
     getAudio();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 import { auth } from "src/lib/firebase";
 import type { NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { Account, Profile, Session, User } from "next-auth";
+import NextAuth, { Account, NextAuthOptions, User } from "next-auth";
 import Providers from "next-auth/providers";
 import { adminAuth } from "src/lib/firebase-admin";
 import {
@@ -12,7 +12,7 @@ import {
 } from "src/lib/users";
 import { toHash } from "src/lib/auth/hash";
 
-const options = {
+const options: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     Providers.Slack({
@@ -21,7 +21,7 @@ const options = {
     }),
     // ユーザー情報更新時の再ログイン
     Providers.Credentials({
-      authorize: async (credentials) => {
+      authorize: async (credentials: { id: string; email: string }) => {
         const { id, email } = credentials;
 
         await customTokenSignIn(id, email);
@@ -31,7 +31,7 @@ const options = {
     }),
   ],
   callbacks: {
-    jwt: async (token: any, user: User, account: Account, profile: Profile) => {
+    jwt: async (token, user, account, profile) => {
       if (user) {
         token.user = user;
         token.account = account;
@@ -39,11 +39,11 @@ const options = {
       }
       return Promise.resolve(token);
     },
-    session: async (session: Session, token: any) => {
-      session.user = token.user;
+    session: async (session, token) => {
+      session.user = token.user as User;
       return Promise.resolve(session);
     },
-    signIn: async (user: User, account: Account) => {
+    signIn: async (user, account) => {
       try {
         if (user !== null) {
           await customTokenSignIn(user.id, user.email);

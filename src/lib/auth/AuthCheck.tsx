@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/client";
 import { Loader } from "src/components/Loader";
 
 type props = {
-  children: any;
+  children: ReactNode;
   pathname: string;
 };
 
@@ -28,7 +28,7 @@ export const Auth = ({ children, pathname }: props) => {
     router.push(loggedInRedirect);
   }
   if (isUser || isNotAuthPaths.includes(pathname)) {
-    return children;
+    return <>{children}</>;
   }
   return (
     <div>
